@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fusão de Certificado com QR Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(60, 72, 100, 0.13);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #6366f1 0%, #0ea5e9 100%);
+            color: #fff;
+            padding: 38px 30px 28px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.7em;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 1.18em;
+            opacity: 0.93;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 48px 36px 36px 36px;
+        }
+
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 36px;
+            margin-bottom: 48px;
+        }
+
+        .upload-area {
+            border: 2.5px dashed #a5b4fc;
+            border-radius: 16px;
+            padding: 48px 20px 40px 20px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(.4,0,.2,1);
+            cursor: pointer;
+            position: relative;
+            background: #f1f5f9;
+            box-shadow: 0 2px 12px rgba(99, 102, 241, 0.04);
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #6366f1;
+            background: #e0e7ff;
+            box-shadow: 0 4px 24px rgba(99, 102, 241, 0.10);
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .upload-icon {
+            font-size: 3.5em;
+            color: #a5b4fc;
+            margin-bottom: 18px;
+            transition: color 0.3s;
+        }
+
+        .upload-area:hover .upload-icon {
+            color: #6366f1;
+        }
+
+        .upload-text {
+            font-size: 1.22em;
+            color: #374151;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            color: #64748b;
+            font-size: 0.98em;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-container {
+            margin-top: 36px;
+            text-align: center;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(99, 102, 241, 0.13);
+            background: #f8fafc;
+            padding: 24px 18px 18px 18px;
+        }
+
+        #previewCanvas {
+            max-width: 100%;
+            max-height: 520px;
+            cursor: crosshair;
+            border-radius: 10px;
+            border: 1.5px solid #e0e7ff;
+            background: #fff;
+        }
+
+        .controls {
+            margin-top: 32px;
+            display: flex;
+            gap: 28px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            background: #f1f5f9;
+            padding: 22px 28px 18px 28px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.06);
+            min-width: 220px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #3730a3;
+            font-size: 1.08em;
+        }
+
+        .control-group input[type="range"] {
+            width: 160px;
+            margin-bottom: 10px;
+            accent-color: #6366f1;
+        }
+
+        .control-group input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #a5b4fc;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1em;
+            background: #fff;
+            color: #3730a3;
+        }
+
+        .btn {
+            padding: 15px 36px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.13em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(.4,0,.2,1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #6366f1 0%, #0ea5e9 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.18);
+            background: linear-gradient(90deg, #4f46e5 0%, #0284c7 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(90deg, #a5b4fc 0%, #818cf8 100%);
+            color: #3730a3;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(129, 140, 248, 0.18);
+            background: linear-gradient(90deg, #818cf8 0%, #6366f1 100%);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .instruction {
+            background: #e0e7ff;
+            border-left: 5px solid #6366f1;
+            padding: 22px 28px;
+            margin: 24px 0 18px 0;
+            border-radius: 7px;
+            color: #3730a3;
+            font-size: 1.08em;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06);
+        }
+
+        .status {
+            text-align: center;
+            margin: 24px 0 0 0;
+            font-size: 1.13em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e42; }
+
+        @media (max-width: 900px) {
+            .content {
+                padding: 18px 8px 18px 8px;
+            }
+            .upload-section {
+                grid-template-columns: 1fr;
+                gap: 22px;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: center;
+                gap: 18px;
+            }
+        }
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            .content {
+                padding: 8px 2px 8px 2px;
+            }
+            .canvas-container {
+                padding: 8px 2px 8px 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Certificado + QR Code</h1>
+            <p>Funda seu QR Code no certificado na posição exata que você escolher</p>
+        </div>
+
+        <div class="content">
+            <div class="upload-section">
+                <div class="upload-area" onclick="document.getElementById('certificateInput').click()" 
+                     ondrop="handleDrop(event, 'certificate')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div class="upload-icon">📜</div>
+                    <div class="upload-text">Certificados (até 60)</div>
+                    <div class="upload-subtext">Clique e selecione a <b>pasta</b> com até 60 imagens de certificados</div>
+                    <input type="file" id="certificateInput" class="file-input" accept="image/*" multiple webkitdirectory directory onchange="loadImage(this, 'certificate')">
+                </div>
+
+                <div class="upload-area" onclick="document.getElementById('qrInput').click()" 
+                     ondrop="handleDrop(event, 'qr')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div class="upload-icon">📱</div>
+                    <div class="upload-text">QR Codes (até 60)</div>
+                    <div class="upload-subtext">Clique e selecione a <b>pasta</b> com até 60 imagens de QR Code</div>
+                    <input type="file" id="qrInput" class="file-input" accept="image/*" multiple webkitdirectory directory onchange="loadImage(this, 'qr')">
+                </div>
+            </div>
+            <div id="fileInfo" style="text-align:center;color:#6366f1;font-weight:600;margin-bottom:18px;"></div>
+
+            <div id="status" class="status"></div>
+
+            <div id="instructionDiv" class="instruction" style="display: none;">
+                <strong>📍 Instruções:</strong> Clique no certificado onde você quer posicionar o QR Code. Você pode ajustar o tamanho usando os controles abaixo.
+            </div>
+
+            <div class="preview-container">
+                <div class="canvas-container">
+                    <canvas id="previewCanvas"></canvas>
+                </div>
+
+                <div id="controls" class="controls" style="display: none;">
+                    <div class="control-group">
+                        <label>Tamanho do QR Code</label>
+                        <input type="range" id="qrSize" min="50" max="300" value="100" oninput="updateQrSize()">
+                        <input type="number" id="qrSizeNum" min="50" max="300" value="100" onchange="updateQrSizeFromInput()">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Opacidade</label>
+                        <input type="range" id="qrOpacity" min="0.1" max="1" step="0.1" value="1" oninput="updateQrOpacity()">
+                        <span id="opacityValue">100%</span>
+                    </div>
+                </div>
+
+                <div class="controls" style="margin-top: 30px;">
+                    <button id="resetBtn" class="btn btn-secondary" onclick="resetPosition()" style="display: none;">
+                        🔄 Reposicionar
+                    </button>
+                    <button id="downloadBtn" class="btn btn-primary" onclick="downloadResult()" style="display: none;">
+                        💾 Baixar Resultado
+                    </button>
+                    <button id="downloadAllBtn" class="btn btn-primary" onclick="downloadAllResults()" style="display: none;">
+                        📦 Baixar Todos (ZIP)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let certificateImgs = [];
+let qrImgs = [];
+let canvas = document.getElementById('previewCanvas');
+let ctx = canvas.getContext('2d');
+let qrPosition = { x: 0, y: 0 };
+let qrSize = 100;
+let qrOpacity = 1;
+let canPlace = false;
+
+function updateStatus(message, type = '') {
+    const status = document.getElementById('status');
+    status.textContent = message;
+    status.className = `status ${type}`;
+}
+
+function showFileInfo() {
+    const certInput = document.getElementById('certificateInput');
+    const qrInput = document.getElementById('qrInput');
+    let certCount = certInput.files ? certInput.files.length : 0;
+    let qrCount = qrInput.files ? qrInput.files.length : 0;
+    document.getElementById('fileInfo').textContent =
+        `Certificados selecionados: ${certCount} | QR Codes selecionados: ${qrCount}`;
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('dragover');
+}
+
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('dragover');
+}
+
+function handleDrop(e, type) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('dragover');
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        const input = document.getElementById(type === 'certificate' ? 'certificateInput' : 'qrInput');
+        input.files = files;
+        loadImage(input, type);
+    }
+}
+
+function loadImage(input, type) {
+    showFileInfo();
+    // Ordena os arquivos por nome para garantir a ordem esquerda-direita
+    const files = Array.from(input.files)
+        .filter(f => f.type.startsWith('image/'))
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}))
+        .slice(0, 60);
+    if (type === 'certificate') {
+        certificateImgs = [];
+    } else {
+        qrImgs = [];
+    }
+    if (files.length === 0) return;
+    let loaded = 0;
+    files.forEach((file, idx) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                if (type === 'certificate') {
+                    certificateImgs[idx] = img;
+                } else {
+                    qrImgs[idx] = img;
+                }
+                loaded++;
+                if (type === 'certificate' && loaded === files.length) {
+                    updateStatus('Certificados carregados! Agora carregue os QR Codes.', 'success');
+                }
+                if (type === 'qr' && loaded === files.length) {
+                    updateStatus('QR Codes carregados! Agora você pode posicionar o primeiro.', 'success');
+                }
+                if (certificateImgs.length > 0 && qrImgs.length > 0 && certificateImgs[0] && qrImgs[0]) {
+                    setupCanvas();
+                    canPlace = true;
+                    document.getElementById('instructionDiv').style.display = 'block';
+                    document.getElementById('controls').style.display = 'flex';
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function setupCanvas() {
+    const maxWidth = 800;
+    const maxHeight = 600;
+    let width = certificateImgs[0].width;
+    let height = certificateImgs[0].height;
+    if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height);
+        width *= ratio;
+        height *= ratio;
+    }
+    canvas.width = width;
+    canvas.height = height;
+    drawCanvas();
+}
+
+function drawCanvas() {
+    if (!certificateImgs[0]) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(certificateImgs[0], 0, 0, canvas.width, canvas.height);
+    if (qrImgs[0] && qrPosition.x > 0 && qrPosition.y > 0) {
+        ctx.globalAlpha = qrOpacity;
+        ctx.drawImage(qrImgs[0], qrPosition.x - qrSize/2, qrPosition.y - qrSize/2, qrSize, qrSize);
+        ctx.globalAlpha = 1;
+        document.getElementById('resetBtn').style.display = 'inline-block';
+        document.getElementById('downloadBtn').style.display = 'inline-block';
+        document.getElementById('downloadAllBtn').style.display = 'inline-block';
+    }
+}
+
+canvas.addEventListener('click', function(e) {
+    if (!canPlace) {
+        updateStatus('Carregue ambas as imagens primeiro!', 'warning');
+        return;
+    }
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    qrPosition.x = (e.clientX - rect.left) * scaleX;
+    qrPosition.y = (e.clientY - rect.top) * scaleY;
+    drawCanvas();
+    updateStatus('QR Code posicionado! Ajuste o tamanho se necessário.', 'success');
+});
+
+function updateQrSize() {
+    qrSize = parseInt(document.getElementById('qrSize').value);
+    document.getElementById('qrSizeNum').value = qrSize;
+    drawCanvas();
+}
+
+function updateQrSizeFromInput() {
+    qrSize = parseInt(document.getElementById('qrSizeNum').value);
+    document.getElementById('qrSize').value = qrSize;
+    drawCanvas();
+}
+
+function updateQrOpacity() {
+    qrOpacity = parseFloat(document.getElementById('qrOpacity').value);
+    document.getElementById('opacityValue').textContent = Math.round(qrOpacity * 100) + '%';
+    drawCanvas();
+}
+
+function resetPosition() {
+    qrPosition = { x: 0, y: 0 };
+    drawCanvas();
+    document.getElementById('resetBtn').style.display = 'none';
+    document.getElementById('downloadBtn').style.display = 'none';
+    document.getElementById('downloadAllBtn').style.display = 'none';
+    updateStatus('Clique no certificado para reposicionar o QR Code.', 'warning');
+}
+
+function downloadResult() {
+    if (!certificateImgs[0] || !qrImgs[0] || qrPosition.x === 0) {
+        updateStatus('Posicione o QR Code primeiro!', 'error');
+        return;
+    }
+    const finalCanvas = document.createElement('canvas');
+    const finalCtx = finalCanvas.getContext('2d');
+    finalCanvas.width = certificateImgs[0].width;
+    finalCanvas.height = certificateImgs[0].height;
+    const scaleX = certificateImgs[0].width / canvas.width;
+    const scaleY = certificateImgs[0].height / canvas.height;
+    finalCtx.drawImage(certificateImgs[0], 0, 0);
+    finalCtx.globalAlpha = qrOpacity;
+    const finalQrSize = qrSize * Math.max(scaleX, scaleY);
+    const finalX = qrPosition.x * scaleX - finalQrSize/2;
+    const finalY = qrPosition.y * scaleY - finalQrSize/2;
+    finalCtx.drawImage(qrImgs[0], finalX, finalY, finalQrSize, finalQrSize);
+    finalCanvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'certificado_com_qrcode.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        updateStatus('Download concluído! 🎉', 'success');
+    }, 'image/png');
+}
+
+async function downloadAllResults() {
+    if (certificateImgs.length === 0 || qrImgs.length === 0 || qrPosition.x === 0) {
+        updateStatus('Carregue e posicione pelo menos um certificado e um QR Code!', 'error');
+        return;
+    }
+    if (certificateImgs.length !== qrImgs.length) {
+        updateStatus('A quantidade de certificados e QR Codes deve ser igual!', 'error');
+        return;
+    }
+    updateStatus('Processando todos os certificados, aguarde...', 'warning');
+    const JSZipScript = document.createElement('script');
+    JSZipScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    JSZipScript.onload = async function() {
+        const zip = new JSZip();
+        for (let i = 0; i < certificateImgs.length; i++) {
+            const cert = certificateImgs[i];
+            const qr = qrImgs[i];
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = cert.width;
+            tempCanvas.height = cert.height;
+            const scaleX = cert.width / canvas.width;
+            const scaleY = cert.height / canvas.height;
+            tempCtx.drawImage(cert, 0, 0);
+            tempCtx.globalAlpha = qrOpacity;
+            const finalQrSize = qrSize * Math.max(scaleX, scaleY);
+            const finalX = qrPosition.x * scaleX - finalQrSize/2;
+            const finalY = qrPosition.y * scaleY - finalQrSize/2;
+            tempCtx.drawImage(qr, finalX, finalY, finalQrSize, finalQrSize);
+            const dataUrl = tempCanvas.toDataURL('image/png');
+            zip.file(`certificado_${i+1}.png`, dataUrl.split(',')[1], {base64: true});
+        }
+        const content = await zip.generateAsync({type: 'blob'});
+        const url = URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'certificados_com_qrcodes.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        updateStatus('Download de todos concluído! 🎉', 'success');
+    };
+    document.body.appendChild(JSZipScript);
+}
+
+// Inicialização
+updateStatus('Carregue o certificado e o QR Code para começar.');
+    </script>
+</body>
+</html>
