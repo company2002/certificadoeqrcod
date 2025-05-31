@@ -294,6 +294,30 @@
                 min-width: 0;
             }
         }
+        .footer-custom {
+            background: rgba(99,102,241,0.97);
+            color: #fff;
+            text-align: center;
+            padding: 12px 0;
+            z-index: 1000;
+            font-size: 1.08em;
+            box-shadow: 0 -2px 16px #6366f133;
+            letter-spacing: 0.2px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            margin-top: 32px;
+        }
+        .footer-link {
+            cursor: pointer;
+            margin: 0 18px;
+            font-weight: 700;
+        }
+        .footer-link:hover {text-decoration:underline;}
+        @media (max-width:600px) {
+            .footer-modal {min-width:0;padding:18px 6px;}
+        }
     </style>
 </head>
 <body>
@@ -310,7 +334,7 @@
                     <div class="upload-icon">📜</div>
                     <div class="upload-text">Certificados (até 60)</div>
                     <div class="upload-subtext">Clique e selecione a <b>pasta</b> com até 60 imagens de certificados</div>
-                    <input type="file" id="certificateInput" class="file-input" accept="image/*" multiple webkitdirectory directory onchange="loadImage(this, 'certificate')">
+                    <input type="file" id="certificateInput" class="file-input" accept="image/*" multiple webkitdirectory onchange="loadImage(this, 'certificate')">
                 </div>
 
                 <div class="upload-area" onclick="document.getElementById('qrInput').click()" 
@@ -318,7 +342,7 @@
                     <div class="upload-icon">📱</div>
                     <div class="upload-text">QR Codes (até 60)</div>
                     <div class="upload-subtext">Clique e selecione a <b>pasta</b> com até 60 imagens de QR Code</div>
-                    <input type="file" id="qrInput" class="file-input" accept="image/*" multiple webkitdirectory directory onchange="loadImage(this, 'qr')">
+                    <input type="file" id="qrInput" class="file-input" accept="image/*" multiple webkitdirectory onchange="loadImage(this, 'qr')">
                 </div>
             </div>
             <div id="fileInfo" style="text-align:center;color:#6366f1;font-weight:600;margin-bottom:18px;"></div>
@@ -365,9 +389,73 @@
                     </button>
                 </div>
             </div>
-        </div>
-    </div>
-
+        </div>    <footer class="footer-custom">
+        <span class="footer-link" onmouseenter="showModal('privacidade')" onmouseleave="hideModal('privacidade')">Política de Privacidade</span> |
+        <span class="footer-link" onmouseenter="showModal('termos')" onmouseleave="hideModal('termos')">Termos de Uso</span> |
+        <span class="footer-link" onmouseenter="showModal('contato')" onmouseleave="hideModal('contato')">Contato</span>
+        <div style="display:block;margin-top:6px;font-size:0.98em;opacity:0.8;">Desenvolvido por Carlos Antonio de Oliveira Piquet, CNPJ: 27.658.099/0001-70</div>
+        <div style="display:block;margin-top:2px;font-size:0.95em;opacity:0.8;">Nenhum dado é gravado ou enviado. Todo o processamento ocorre localmente no seu navegador. Ao fechar o site, todos os dados e imagens serão perdidos.</div>
+    </footer>
+    <!-- Modais -->
+    <div id="modal-privacidade" class="footer-modal" style="display:none;"></div>
+    <div id="modal-termos" class="footer-modal" style="display:none;"></div>
+    <div id="modal-contato" class="footer-modal" style="display:none;"></div>
+    <style>
+        .footer-modal {
+            position:fixed;
+            bottom:48px;
+            left:50%;
+            transform:translateX(-50%);
+            background:#fff;
+            color:#3730a3;
+            border-radius:14px;
+            box-shadow:0 8px 32px #6366f155;
+            padding:32px 28px 24px 28px;
+            min-width:320px;
+            max-width:90vw;
+            z-index:2000;
+            font-size:1.08em;
+            font-weight:500;
+            text-align:left;
+            border:2px solid #a5b4fc;
+            display:none;
+        }
+        .footer-link:hover {text-decoration:underline;}
+        @media (max-width:600px) {
+            .footer-modal {min-width:0;padding:18px 6px;}
+        }
+    </style>
+    <script>
+    function showModal(tipo) {
+        hideModal();
+        let modal = document.getElementById('modal-' + tipo);
+        if (modal) {
+            if (tipo === 'privacidade') {
+                modal.innerHTML = `<b>Política de Privacidade</b><br><br>
+                Este site respeita a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018). Nenhum dado pessoal é coletado, armazenado ou compartilhado. O processamento das imagens ocorre totalmente no seu navegador, sem envio para servidores externos. O usuário é responsável pelo conteúdo dos certificados e QR Codes utilizados. Para mais informações sobre a LGPD, acesse: <a href='https://www.gov.br/cidadania/pt-br/acesso-a-informacao/lgpd' target='_blank'>gov.br/lgpd</a>.`;
+            } else if (tipo === 'termos') {
+                modal.innerHTML = `<b>Termos de Uso</b><br><br>
+                O uso desta ferramenta é de responsabilidade exclusiva do usuário. O site não se responsabiliza por eventuais erros, fraudes, uso indevido ou consequências legais decorrentes da produção dos certificados e da fusão dos QR Codes. O usuário deve garantir que possui direitos sobre os conteúdos utilizados e que respeita a legislação vigente, incluindo a Lei de Direitos Autorais (Lei nº 9.610/1998), LGPD (Lei nº 13.709/2018) e demais normas aplicáveis. Ao utilizar este serviço, o usuário concorda integralmente com estes termos.`;
+            } else if (tipo === 'contato') {
+                modal.innerHTML = `<b>Contato</b><br><br>
+                Desenvolvido por Carlos Antonio de Oliveira Piquet<br>
+                CNPJ: 27.658.099/0001-70<br>
+                E-mail: <a href='mailto:carlospiquet.projetos@gmail.com'>carlospiquet.projetos@gmail.com</a>`;
+            }
+            modal.style.display = 'block';
+        }
+    }
+    function hideModal(tipo) {
+        if (tipo) {
+            let modal = document.getElementById('modal-' + tipo);
+            if (modal) modal.style.display = 'none';
+        } else {
+            document.getElementById('modal-privacidade').style.display = 'none';
+            document.getElementById('modal-termos').style.display = 'none';
+            document.getElementById('modal-contato').style.display = 'none';
+        }
+    }
+    </script>
     <script>
         let certificateImgs = [];
 let qrImgs = [];
@@ -416,10 +504,15 @@ function handleDrop(e, type) {
 
 function loadImage(input, type) {
     showFileInfo();
-    // Ordena os arquivos por nome para garantir a ordem esquerda-direita
+    // Ordena os arquivos pelo número extraído do nome, independente do prefixo
+    function extractNumber(filename) {
+        // Procura o último grupo de dígitos no nome do arquivo
+        const match = filename.match(/(\d+)(?!.*\d)/);
+        return match ? parseInt(match[1], 10) : 0;
+    }
     const files = Array.from(input.files)
         .filter(f => f.type.startsWith('image/'))
-        .sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}))
+        .sort((a, b) => extractNumber(a.name) - extractNumber(b.name))
         .slice(0, 60);
     if (type === 'certificate') {
         certificateImgs = [];
@@ -439,17 +532,19 @@ function loadImage(input, type) {
                     qrImgs[idx] = img;
                 }
                 loaded++;
-                if (type === 'certificate' && loaded === files.length) {
-                    updateStatus('Certificados carregados! Agora carregue os QR Codes.', 'success');
-                }
-                if (type === 'qr' && loaded === files.length) {
-                    updateStatus('QR Codes carregados! Agora você pode posicionar o primeiro.', 'success');
-                }
+                // Exibe o preview assim que a primeira imagem de cada for carregada
                 if (certificateImgs.length > 0 && qrImgs.length > 0 && certificateImgs[0] && qrImgs[0]) {
                     setupCanvas();
                     canPlace = true;
                     document.getElementById('instructionDiv').style.display = 'block';
                     document.getElementById('controls').style.display = 'flex';
+                }
+                // Mensagens de status
+                if (type === 'certificate' && loaded === files.length) {
+                    updateStatus('Certificados carregados! Agora carregue os QR Codes.', 'success');
+                }
+                if (type === 'qr' && loaded === files.length) {
+                    updateStatus('QR Codes carregados! Agora você pode posicionar o primeiro.', 'success');
                 }
             };
             img.src = e.target.result;
