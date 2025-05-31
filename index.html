@@ -467,12 +467,14 @@ let qrOpacity = 1;
 let qrRotation = 0;
 let canPlace = false;
 
+        // Atualiza a mensagem de status na interface
 function updateStatus(message, type = '') {
     const status = document.getElementById('status');
     status.textContent = message;
     status.className = `status ${type}`;
 }
 
+// Exibe a quantidade de arquivos de certificados e QR Codes selecionados
 function showFileInfo() {
     const certInput = document.getElementById('certificateInput');
     const qrInput = document.getElementById('qrInput');
@@ -482,15 +484,18 @@ function showFileInfo() {
         `Certificados selecionados: ${certCount} | QR Codes selecionados: ${qrCount}`;
 }
 
+// Adiciona efeito visual ao arrastar arquivos sobre a área de upload
 function handleDragOver(e) {
     e.preventDefault();
     e.currentTarget.classList.add('dragover');
 }
 
+// Remove efeito visual ao sair da área de upload
 function handleDragLeave(e) {
     e.currentTarget.classList.remove('dragover');
 }
 
+// Lida com o drop de arquivos na área de upload
 function handleDrop(e, type) {
     e.preventDefault();
     e.currentTarget.classList.remove('dragover');
@@ -502,6 +507,7 @@ function handleDrop(e, type) {
     }
 }
 
+// Carrega as imagens dos arquivos selecionados e ordena por número no nome
 function loadImage(input, type) {
     showFileInfo();
     // Ordena os arquivos pelo número extraído do nome, independente do prefixo
@@ -553,6 +559,7 @@ function loadImage(input, type) {
     });
 }
 
+// Prepara o canvas para exibir o certificado e o QR Code
 function setupCanvas() {
     const maxWidth = 800;
     const maxHeight = 600;
@@ -568,6 +575,7 @@ function setupCanvas() {
     drawCanvas();
 }
 
+// Desenha o certificado e o QR Code no canvas de visualização
 function drawCanvas() {
     if (!certificateImgs[0]) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -586,6 +594,7 @@ function drawCanvas() {
     }
 }
 
+// Evento de clique no canvas para posicionar o QR Code
 canvas.addEventListener('click', function(e) {
     if (!canPlace) {
         updateStatus('Carregue ambas as imagens primeiro!', 'warning');
@@ -600,30 +609,35 @@ canvas.addEventListener('click', function(e) {
     updateStatus('QR Code posicionado! Ajuste o tamanho se necessário.', 'success');
 });
 
+// Atualiza o tamanho do QR Code pelo controle deslizante
 function updateQrSize() {
     qrSize = parseInt(document.getElementById('qrSize').value);
     document.getElementById('qrSizeNum').value = qrSize;
     drawCanvas();
 }
 
+// Atualiza o tamanho do QR Code pelo campo numérico
 function updateQrSizeFromInput() {
     qrSize = parseInt(document.getElementById('qrSizeNum').value);
     document.getElementById('qrSize').value = qrSize;
     drawCanvas();
 }
 
+// Atualiza a opacidade do QR Code
 function updateQrOpacity() {
     qrOpacity = parseFloat(document.getElementById('qrOpacity').value);
     document.getElementById('opacityValue').textContent = Math.round(qrOpacity * 100) + '%';
     drawCanvas();
 }
 
+// Gira o QR Code em 90 graus
 function rotateQr() {
     qrRotation = (qrRotation + 90) % 360;
     document.getElementById('qrRotationLabel').textContent = qrRotation + '°';
     drawCanvas();
 }
 
+// Reseta a posição do QR Code no canvas
 function resetPosition() {
     qrPosition = { x: 0, y: 0 };
     drawCanvas();
@@ -633,6 +647,7 @@ function resetPosition() {
     updateStatus('Clique no certificado para reposicionar o QR Code.', 'warning');
 }
 
+// Faz o download do certificado com o QR Code posicionado
 function downloadResult() {
     if (!certificateImgs[0] || !qrImgs[0] || qrPosition.x === 0) {
         updateStatus('Posicione o QR Code primeiro!', 'error');
@@ -667,6 +682,7 @@ function downloadResult() {
     }, 'image/png');
 }
 
+// Faz o download de todos os certificados com QR Codes em um arquivo ZIP
 async function downloadAllResults() {
     if (certificateImgs.length === 0 || qrImgs.length === 0 || qrPosition.x === 0) {
         updateStatus('Carregue e posicione pelo menos um certificado e um QR Code!', 'error');
@@ -717,7 +733,7 @@ async function downloadAllResults() {
     document.body.appendChild(JSZipScript);
 }
 
-// Inicialização
+// Inicialização da mensagem de status
 updateStatus('Carregue o certificado e o QR Code para começar.');
     </script>
 </body>
