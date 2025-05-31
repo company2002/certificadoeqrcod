@@ -16,247 +16,282 @@
             background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
             min-height: 100vh;
             padding: 32px;
+            /* Glassmorphism overlay */
+            position: relative;
         }
-
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(120deg, #6366f1 0%, #0ea5e9 100%);
+            opacity: 0.13;
+            z-index: 0;
+        }
         .container {
             max-width: 1100px;
             margin: 0 auto;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(60, 72, 100, 0.13);
+            background: rgba(255,255,255,0.85);
+            border-radius: 24px;
+            box-shadow: 0 12px 48px 0 rgba(60, 72, 100, 0.18);
             overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(8px);
         }
-
         .header {
             background: linear-gradient(90deg, #6366f1 0%, #0ea5e9 100%);
             color: #fff;
-            padding: 38px 30px 28px 30px;
+            padding: 48px 30px 38px 30px;
             text-align: center;
+            box-shadow: 0 4px 32px rgba(99, 102, 241, 0.13);
+            position: relative;
         }
-
         .header h1 {
-            font-size: 2.7em;
-            margin-bottom: 8px;
-            font-weight: 700;
-            letter-spacing: -1px;
+            font-size: 3.2em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            text-shadow: 0 2px 12px rgba(14,165,233,0.18);
         }
-
         .header p {
-            font-size: 1.18em;
-            opacity: 0.93;
+            font-size: 1.25em;
+            opacity: 0.96;
             font-weight: 400;
+            letter-spacing: 0.2px;
         }
-
         .content {
-            padding: 48px 36px 36px 36px;
+            padding: 56px 44px 44px 44px;
+            position: relative;
+            z-index: 1;
         }
-
         .upload-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 36px;
-            margin-bottom: 48px;
+            gap: 44px;
+            margin-bottom: 56px;
         }
-
         .upload-area {
             border: 2.5px dashed #a5b4fc;
-            border-radius: 16px;
-            padding: 48px 20px 40px 20px;
+            border-radius: 20px;
+            padding: 56px 24px 48px 24px;
             text-align: center;
-            transition: all 0.3s cubic-bezier(.4,0,.2,1);
+            transition: all 0.35s cubic-bezier(.4,0,.2,1);
             cursor: pointer;
             position: relative;
-            background: #f1f5f9;
-            box-shadow: 0 2px 12px rgba(99, 102, 241, 0.04);
+            background: rgba(241,245,249,0.85);
+            box-shadow: 0 4px 24px rgba(99, 102, 241, 0.08);
+            overflow: hidden;
         }
-
         .upload-area:hover, .upload-area.dragover {
             border-color: #6366f1;
-            background: #e0e7ff;
-            box-shadow: 0 4px 24px rgba(99, 102, 241, 0.10);
-            transform: translateY(-2px) scale(1.01);
+            background: rgba(224,231,255,0.95);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.16);
+            transform: translateY(-3px) scale(1.025);
         }
-
+        .upload-area::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, #6366f1 0%, #0ea5e9 100%);
+            opacity: 0.07;
+            pointer-events: none;
+        }
         .upload-icon {
-            font-size: 3.5em;
+            font-size: 4.2em;
             color: #a5b4fc;
-            margin-bottom: 18px;
+            margin-bottom: 22px;
             transition: color 0.3s;
+            filter: drop-shadow(0 2px 8px #6366f1aa);
         }
-
         .upload-area:hover .upload-icon {
             color: #6366f1;
         }
-
         .upload-text {
-            font-size: 1.22em;
+            font-size: 1.32em;
             color: #374151;
-            margin-bottom: 10px;
-            font-weight: 600;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
         }
-
         .upload-subtext {
             color: #64748b;
-            font-size: 0.98em;
+            font-size: 1.05em;
         }
-
         .file-input {
             display: none;
         }
-
         .preview-container {
-            margin-top: 36px;
+            margin-top: 44px;
             text-align: center;
         }
-
         .canvas-container {
             position: relative;
             display: inline-block;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 6px 24px rgba(99, 102, 241, 0.13);
-            background: #f8fafc;
-            padding: 24px 18px 18px 18px;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.16);
+            background: rgba(248,250,252,0.95);
+            padding: 32px 22px 22px 22px;
+            border: 1.5px solid #e0e7ff;
+            transition: box-shadow 0.3s;
         }
-
+        .canvas-container:hover {
+            box-shadow: 0 16px 48px rgba(99, 102, 241, 0.22);
+        }
         #previewCanvas {
             max-width: 100%;
             max-height: 520px;
             cursor: crosshair;
-            border-radius: 10px;
-            border: 1.5px solid #e0e7ff;
+            border-radius: 12px;
+            border: 2.5px solid #a5b4fc;
             background: #fff;
+            box-shadow: 0 2px 12px rgba(99, 102, 241, 0.08);
+            transition: border-color 0.3s;
         }
-
+        #previewCanvas:active {
+            border-color: #6366f1;
+        }
         .controls {
-            margin-top: 32px;
+            margin-top: 38px;
             display: flex;
-            gap: 28px;
+            gap: 36px;
             justify-content: center;
             flex-wrap: wrap;
         }
-
         .control-group {
-            background: #f1f5f9;
-            padding: 22px 28px 18px 28px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.06);
-            min-width: 220px;
+            background: rgba(241,245,249,0.92);
+            padding: 28px 36px 22px 36px;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(99, 102, 241, 0.09);
+            min-width: 240px;
+            border: 1.5px solid #e0e7ff;
+            transition: box-shadow 0.3s;
         }
-
         .control-group label {
             display: block;
-            margin-bottom: 10px;
-            font-weight: 700;
+            margin-bottom: 12px;
+            font-weight: 800;
             color: #3730a3;
-            font-size: 1.08em;
+            font-size: 1.13em;
+            letter-spacing: 0.1px;
         }
-
         .control-group input[type="range"] {
-            width: 160px;
-            margin-bottom: 10px;
+            width: 170px;
+            margin-bottom: 12px;
             accent-color: #6366f1;
         }
-
         .control-group input[type="number"] {
-            width: 80px;
-            padding: 8px;
+            width: 90px;
+            padding: 9px;
             border: 2px solid #a5b4fc;
-            border-radius: 6px;
+            border-radius: 8px;
             text-align: center;
-            font-size: 1em;
+            font-size: 1.08em;
             background: #fff;
             color: #3730a3;
+            box-shadow: 0 1px 4px rgba(99, 102, 241, 0.06);
         }
-
         .btn {
-            padding: 15px 36px;
+            padding: 17px 44px;
             border: none;
-            border-radius: 50px;
-            font-size: 1.13em;
-            font-weight: 700;
+            border-radius: 60px;
+            font-size: 1.18em;
+            font-weight: 800;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(.4,0,.2,1);
+            transition: all 0.22s cubic-bezier(.4,0,.2,1);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+            letter-spacing: 1.2px;
+            box-shadow: 0 2px 12px rgba(99, 102, 241, 0.10);
+            position: relative;
+            overflow: hidden;
         }
-
         .btn-primary {
             background: linear-gradient(90deg, #6366f1 0%, #0ea5e9 100%);
             color: #fff;
         }
-
         .btn-primary:hover {
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.18);
+            transform: translateY(-3px) scale(1.045);
+            box-shadow: 0 12px 36px rgba(99, 102, 241, 0.22);
             background: linear-gradient(90deg, #4f46e5 0%, #0284c7 100%);
         }
-
         .btn-secondary {
             background: linear-gradient(90deg, #a5b4fc 0%, #818cf8 100%);
             color: #3730a3;
         }
-
         .btn-secondary:hover {
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 8px 24px rgba(129, 140, 248, 0.18);
+            transform: translateY(-3px) scale(1.045);
+            box-shadow: 0 12px 36px rgba(129, 140, 248, 0.18);
             background: linear-gradient(90deg, #818cf8 0%, #6366f1 100%);
         }
-
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
-
         .instruction {
-            background: #e0e7ff;
-            border-left: 5px solid #6366f1;
-            padding: 22px 28px;
-            margin: 24px 0 18px 0;
-            border-radius: 7px;
+            background: rgba(224,231,255,0.92);
+            border-left: 6px solid #6366f1;
+            padding: 28px 36px;
+            margin: 32px 0 22px 0;
+            border-radius: 10px;
             color: #3730a3;
-            font-size: 1.08em;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06);
+            font-size: 1.13em;
+            font-weight: 600;
+            box-shadow: 0 2px 12px rgba(99, 102, 241, 0.09);
         }
-
         .status {
             text-align: center;
-            margin: 24px 0 0 0;
-            font-size: 1.13em;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            margin: 32px 0 0 0;
+            font-size: 1.18em;
+            font-weight: 800;
+            letter-spacing: 0.7px;
+            text-shadow: 0 1px 4px #e0e7ff;
         }
-
         .success { color: #22c55e; }
         .error { color: #ef4444; }
         .warning { color: #f59e42; }
-
+        #fileInfo {
+            font-size: 1.08em;
+            background: rgba(224,231,255,0.7);
+            border-radius: 8px;
+            padding: 8px 0;
+            margin-bottom: 22px;
+            box-shadow: 0 1px 4px #a5b4fc33;
+        }
+        /* Animations */
+        .btn, .upload-area, .canvas-container, .control-group {
+            will-change: transform, box-shadow;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        /* Responsividade aprimorada */
         @media (max-width: 900px) {
             .content {
                 padding: 18px 8px 18px 8px;
             }
             .upload-section {
                 grid-template-columns: 1fr;
-                gap: 22px;
+                gap: 28px;
             }
             .controls {
                 flex-direction: column;
                 align-items: center;
-                gap: 18px;
+                gap: 22px;
             }
         }
         @media (max-width: 600px) {
             .header h1 {
-                font-size: 1.5em;
+                font-size: 1.7em;
             }
             .content {
                 padding: 8px 2px 8px 2px;
             }
             .canvas-container {
                 padding: 8px 2px 8px 2px;
+            }
+            .control-group {
+                padding: 16px 8px 12px 8px;
+                min-width: 0;
             }
         }
     </style>
@@ -311,6 +346,11 @@
                         <input type="range" id="qrOpacity" min="0.1" max="1" step="0.1" value="1" oninput="updateQrOpacity()">
                         <span id="opacityValue">100%</span>
                     </div>
+                    <div class="control-group">
+                        <label>Girar QR Code</label>
+                        <button type="button" class="btn btn-secondary" style="padding:8px 18px;font-size:1.1em;min-width:unset;" onclick="rotateQr()">⟳ Girar 90°</button>
+                        <span id="qrRotationLabel" style="display:block;margin-top:8px;color:#6366f1;font-weight:700;">0°</span>
+                    </div>
                 </div>
 
                 <div class="controls" style="margin-top: 30px;">
@@ -336,6 +376,7 @@ let ctx = canvas.getContext('2d');
 let qrPosition = { x: 0, y: 0 };
 let qrSize = 100;
 let qrOpacity = 1;
+let qrRotation = 0;
 let canPlace = false;
 
 function updateStatus(message, type = '') {
@@ -437,8 +478,12 @@ function drawCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(certificateImgs[0], 0, 0, canvas.width, canvas.height);
     if (qrImgs[0] && qrPosition.x > 0 && qrPosition.y > 0) {
+        ctx.save();
         ctx.globalAlpha = qrOpacity;
-        ctx.drawImage(qrImgs[0], qrPosition.x - qrSize/2, qrPosition.y - qrSize/2, qrSize, qrSize);
+        ctx.translate(qrPosition.x, qrPosition.y);
+        ctx.rotate(qrRotation * Math.PI / 180);
+        ctx.drawImage(qrImgs[0], -qrSize/2, -qrSize/2, qrSize, qrSize);
+        ctx.restore();
         ctx.globalAlpha = 1;
         document.getElementById('resetBtn').style.display = 'inline-block';
         document.getElementById('downloadBtn').style.display = 'inline-block';
@@ -478,6 +523,12 @@ function updateQrOpacity() {
     drawCanvas();
 }
 
+function rotateQr() {
+    qrRotation = (qrRotation + 90) % 360;
+    document.getElementById('qrRotationLabel').textContent = qrRotation + '°';
+    drawCanvas();
+}
+
 function resetPosition() {
     qrPosition = { x: 0, y: 0 };
     drawCanvas();
@@ -499,11 +550,15 @@ function downloadResult() {
     const scaleX = certificateImgs[0].width / canvas.width;
     const scaleY = certificateImgs[0].height / canvas.height;
     finalCtx.drawImage(certificateImgs[0], 0, 0);
+    finalCtx.save();
     finalCtx.globalAlpha = qrOpacity;
     const finalQrSize = qrSize * Math.max(scaleX, scaleY);
-    const finalX = qrPosition.x * scaleX - finalQrSize/2;
-    const finalY = qrPosition.y * scaleY - finalQrSize/2;
-    finalCtx.drawImage(qrImgs[0], finalX, finalY, finalQrSize, finalQrSize);
+    const finalX = qrPosition.x * scaleX;
+    const finalY = qrPosition.y * scaleY;
+    finalCtx.translate(finalX, finalY);
+    finalCtx.rotate(qrRotation * Math.PI / 180);
+    finalCtx.drawImage(qrImgs[0], -finalQrSize/2, -finalQrSize/2, finalQrSize, finalQrSize);
+    finalCtx.restore();
     finalCanvas.toBlob(function(blob) {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -541,11 +596,15 @@ async function downloadAllResults() {
             const scaleX = cert.width / canvas.width;
             const scaleY = cert.height / canvas.height;
             tempCtx.drawImage(cert, 0, 0);
+            tempCtx.save();
             tempCtx.globalAlpha = qrOpacity;
             const finalQrSize = qrSize * Math.max(scaleX, scaleY);
-            const finalX = qrPosition.x * scaleX - finalQrSize/2;
-            const finalY = qrPosition.y * scaleY - finalQrSize/2;
-            tempCtx.drawImage(qr, finalX, finalY, finalQrSize, finalQrSize);
+            const finalX = qrPosition.x * scaleX;
+            const finalY = qrPosition.y * scaleY;
+            tempCtx.translate(finalX, finalY);
+            tempCtx.rotate(qrRotation * Math.PI / 180);
+            tempCtx.drawImage(qr, -finalQrSize/2, -finalQrSize/2, finalQrSize, finalQrSize);
+            tempCtx.restore();
             const dataUrl = tempCanvas.toDataURL('image/png');
             zip.file(`certificado_${i+1}.png`, dataUrl.split(',')[1], {base64: true});
         }
